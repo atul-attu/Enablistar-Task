@@ -1,26 +1,20 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import CustomerDetails from './components/CustomerDetails';
 import ManageBeneficiaries from './components/ManageBeneficiaries';
-import EditBeneficiary from './components/EditBeneficiary';
-import ViewBeneficiary from './components/ViewBeneficiary';
-import RemoveBeneficiary from './components/RemoveBeneficiary';
 import './App.scss';
-
-// Other imports
 
 const App = () => {
     return (
-        <>
-            <Router>
-                <Routes>
-                    <Route exact path="/" element={<ManageBeneficiaries/>} />
-                    <Route exact path="/edit/:id" element={EditBeneficiary} />
-                    <Route exact path="/view/:id" element={ViewBeneficiary} />
-                    <Route exact path="/remove/:id" element={RemoveBeneficiary} />
-                </Routes>
-            </Router>
-        </>
+        <Provider store={store}>
+            <Routes>
+                <Route exact path="/" element={<CustomerDetails />} />
+                <Route exact path="/manage-beneficiaries" element={<ManageBeneficiaries />} />
+            </Routes>
+        </Provider>
     );
 };
 
