@@ -136,10 +136,10 @@ const ManageBeneficiaries = () => {
 
 					<div className='form_col'>
 						<label>Account Type</label>
-						<select name="accountType" {...register('accountType', { required: true })}>
-							<option disabled selected value="">Select Account Type</option>
-							<option value="savings">Savings</option>
-							<option value="current">Current</option>
+						<select name="accountType" {...register('accountType', { required: true })} defaultValue="">
+						<option value="">Select Account Type</option>
+						<option value="savings">Savings</option>
+						<option value="current">Current</option>
 						</select>
 						{errors.accountType && <span className='error_msg'>Account Type is required</span>}
 					</div>

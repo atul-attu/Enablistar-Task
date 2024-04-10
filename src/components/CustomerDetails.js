@@ -33,7 +33,7 @@ const CustomDetails = () => {
                     <div className='form_col'>
                         <label>Country:</label>
                         <select name="country" {...register('country', { required: true })}>
-                            <option disabled selected value="">Select Country</option>
+                            <option value="">Select Country</option>
                             <option value="India">India</option>
                             <option value="Japan">Japan</option>
                             <option value="China">China</option>
