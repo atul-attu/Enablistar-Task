@@ -2,9 +2,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    beneficiaries: [ // Make sure beneficiaries is initialized as an array
-        { beneficiaryName: 'John Doe', accountNumber: '123456789', bankName: 'Bank of America', accountType: 'savings' },
-        { beneficiaryName: 'Jane Smith', accountNumber: '987654321', bankName: 'Chase Bank', accountType: 'current' }
+    beneficiaries: [
+        { id: 1, beneficiaryName: 'John Doe', accountNumber: '123456789', bankName: 'Bank of America', accountType: 'savings' },
+        { id: 2, beneficiaryName: 'Jane Smith', accountNumber: '987654321', bankName: 'Chase Bank', accountType: 'current' }
     ]
 };
 
@@ -13,14 +13,21 @@ const beneficiariesSlice = createSlice({
     initialState,
     reducers: {
         addBeneficiary(state, action) {
-            state.beneficiaries.push(action.payload);
+            state.beneficiaries.push({ id: state.beneficiaries.length + 1, ...action.payload });
+        },
+        updateBeneficiary(state, action) {
+            const { id, data } = action.payload;
+            const beneficiary = state.beneficiaries.find(b => b.id === id);
+            if (beneficiary) {
+                Object.assign(beneficiary, data);
+            }
         },
         deleteBeneficiary(state, action) {
-            state.beneficiaries = state.beneficiaries.filter(beneficiary => beneficiary.accountNumber !== action.payload.accountNumber);
+            state.beneficiaries = state.beneficiaries.filter(b => b.id !== action.payload);
         }
     }
 });
 
-export const { addBeneficiary, deleteBeneficiary } = beneficiariesSlice.actions;
+export const { addBeneficiary, updateBeneficiary, deleteBeneficiary } = beneficiariesSlice.actions;
 
 export default beneficiariesSlice.reducer;

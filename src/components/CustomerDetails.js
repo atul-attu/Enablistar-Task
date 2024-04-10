@@ -3,13 +3,15 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 const CustomDetails = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const navigate = useNavigate();
     const [beneficiaries, setBeneficiaries] = useState([]);
 
     const onSubmit = (data) => {
         const newBeneficiary = { id: beneficiaries.length + 1, ...data };
         setBeneficiaries([...beneficiaries, newBeneficiary]);
+        reset();
+        localStorage.setItem('customer-details-available', 'yes');
         navigate('/manage-beneficiaries');
     };
 

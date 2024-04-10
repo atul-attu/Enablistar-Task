@@ -107,8 +107,9 @@
 }
 
 .add_beneficiaries_wrap{
-    flex-wrap: wrap;
+    height: auto;
     flex-direction: column;
+    margin-top: 50px;
     .table_wrap{
         width: 90%;
         max-width: 800px;
@@ -120,10 +121,42 @@
             border-collapse: collapse;
         }
         td, th{
-            padding: 10px;
+            padding: 2px 10px;
             border-top: 1px solid rgba(0, 0, 0, 0.2);
             border-left: 1px solid rgba(0, 0, 0, 0.2);
             border-collapse: collapse;
         }
+        th{
+            padding: 10px;
+        }
+        .action_btns_wrap{
+            display: flex;
+            flex-direction: column;
+        }
+        .action_btn{
+            font-size: 14px;
+            padding: 8px 5px;
+            background-color: #48a9ff70;
+            border: 0;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            color: rgba(0,0,0,0.8);
+            &.delete_btn{
+                background-color: #ff0000;
+                color: #fff;
+            }
+        }
     }
+}
+
+.highlight-input {
+    transition: background-color 0.3s ease;
+    background-color: #ffffcc; /* Light yellow */
+}
+
+.highlight-row {
+    transition: background-color 0.3s ease;
+    background-color: #ffffcc; /* Light yellow */
 }

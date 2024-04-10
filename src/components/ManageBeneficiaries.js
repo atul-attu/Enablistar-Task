@@ -1,52 +1,116 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { addBeneficiary, deleteBeneficiary } from '../redux/reducers';
+import { useNavigate } from 'react-router-dom';
+import { addBeneficiary, deleteBeneficiary, updateBeneficiary } from '../redux/reducers';
 import Swal from 'sweetalert2';
 
 const ManageBeneficiaries = () => {
-	const { register, handleSubmit, formState: { errors } } = useForm();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+        const flag = localStorage.getItem('customer-details-available');
+        if (flag !== 'yes') {
+            navigate('/');
+        }
+    }, [navigate]);
+
+	const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
 	const dispatch = useDispatch();
 
 	const beneficiariesDefault = useSelector(state => state.beneficiaries);
 	const [newBeneficiary, setNewBeneficiary] = useState(null);
 	const [isAdding, setIsAdding] = useState(false);
+	const [editBeneficiary, setEditBeneficiary] = useState(null);
 
-	const onSubmit = data => {
+	const onSubmit = data => {   
 		setIsAdding(true);
+		let confirmationText = '';
+		if (editBeneficiary) {
+			confirmationText = 'Do you want to update this beneficiary?';
+		} else {
+			confirmationText = 'Do you want to add this beneficiary?';
+		}
+		
 		Swal.fire({
 			title: 'Are you sure?',
-			text: 'Do you want to add this beneficiary?',
+			text: confirmationText,
 			icon: 'question',
 			showCancelButton: true,
 			confirmButtonText: 'Yes',
 			cancelButtonText: 'No'
 		}).then((result) => {
 			if (result.isConfirmed) {
-				dispatch(addBeneficiary(data));
-				setNewBeneficiary(data);
-				Swal.fire('Added!', 'The beneficiary has been added.', 'success');
+				if (editBeneficiary) {
+					dispatch(updateBeneficiary({ id: editBeneficiary.id, data }));
+					setEditBeneficiary(null);
+					Swal.fire({
+						title: 'Success',
+						text: 'Beneficiary updated successfully',
+						icon: 'success',
+						showCancelButton: false,
+						confirmButtonText: 'OK',
+					});
+					
+					const rows = document.querySelectorAll('.table_wrap tbody tr');
+					rows.forEach((row) => {
+						if (row.textContent.includes(data.accountNumber)) {
+							row.classList.add('highlight-row');
+							setTimeout(() => {
+								row.classList.remove('highlight-row');
+							}, 2000);
+						}
+					});
+				} else {
+					dispatch(addBeneficiary(data));
+					setNewBeneficiary(data);
+					Swal.fire({
+						title: 'Success',
+						text: 'Beneficiary added successfully',
+						icon: 'success',
+						showCancelButton: false,
+						confirmButtonText: 'OK',
+					});
+				}
+				reset();
 			}
 			setIsAdding(false);
 		});
 	};
 
-	const handleDeleteBeneficiary = (beneficiaryToDelete) => {
-		Swal.fire({
-			title: 'Are you sure?',
-			text: 'Do you want to delete this beneficiary?',
-			icon: 'question',
-			showCancelButton: true,
-			confirmButtonText: 'Yes',
-			cancelButtonText: 'No'
-		}).then((result) => {
-			if (result.isConfirmed) {
-				dispatch(deleteBeneficiary(beneficiaryToDelete));
-				setNewBeneficiary(null); // Reset newBeneficiary state if it was the one being deleted
-				Swal.fire('Deleted!', 'The beneficiary has been deleted.', 'success');
-			}
+	const handleEditBeneficiary = (beneficiary) => {
+		setEditBeneficiary(beneficiary);
+		Object.entries(beneficiary).forEach(([key, value]) => {
+			setValue(key, value);
+		});
+		setNewBeneficiary(null);
+	
+		// Highlight the input fields for 2 seconds
+		const inputs = document.querySelectorAll('.form_fields_wrap input, .form_fields_wrap select');
+		inputs.forEach((input) => {
+			input.classList.add('highlight-input');
+			setTimeout(() => {
+				input.classList.remove('highlight-input');
+			}, 2000);
 		});
 	};
+
+	const handleDeleteBeneficiary = (beneficiaryToDelete) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this beneficiary?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(deleteBeneficiary(beneficiaryToDelete));
+                setNewBeneficiary(null); 
+                Swal.fire('Deleted!', 'The beneficiary has been deleted.', 'success');
+            }
+        });
+    };
 
 	return (
 		<div className='customer_details_wrap add_beneficiaries_wrap'>
@@ -104,7 +168,10 @@ const ManageBeneficiaries = () => {
 								<td>{beneficiary.bankName}</td>
 								<td>{beneficiary.accountType}</td>
 								<td>
-									<button onClick={() => handleDeleteBeneficiary(beneficiary)}>Delete</button>
+									<div className='action_btns_wrap'>
+										<button className='action_btn delete_btn' onClick={() => handleDeleteBeneficiary(beneficiary)}>Delete</button>
+										<button className='action_btn edit_btn' onClick={() => handleEditBeneficiary(beneficiary)}>Edit</button>
+									</div>
 								</td>
 							</tr>
 						))}
@@ -115,7 +182,10 @@ const ManageBeneficiaries = () => {
 								<td>{newBeneficiary.bankName}</td>
 								<td>{newBeneficiary.accountType}</td>
 								<td>
-									<button onClick={() => handleDeleteBeneficiary(newBeneficiary)}>Delete</button>
+									<div className='action_btns_wrap'>
+										<button className='action_btn delete_btn' onClick={() => handleDeleteBeneficiary(newBeneficiary)}>Delete</button>
+										<button className='action_btn edit_btn' onClick={() => handleEditBeneficiary(newBeneficiary)}>Edit</button>
+									</div>
 								</td>
 							</tr>
 						)}
